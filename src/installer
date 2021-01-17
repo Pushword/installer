@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Use it :
-# echo 'a y' | ./installer ./my-folder
+# echo 'y' | ./installer ./my-folder
 
 # Bash script relative lines
 : ${1?failure: in wich folder should i work ?}
@@ -26,11 +26,8 @@ sed -i -e 's/"post-update-cmd": \[/"post-update-cmd": \[\n            "Pushword\
 composer config extra.symfony.allow-contrib true
 
 # Get Pushword
-composer require pushword/core pushword/admin
+composer require pushword/core
 composer require pushword/skeleton --dev
-
-# Add puswhord/admin routes
-sed -i '1s/^/admin:\n    resource: "@PushwordAdminBundle\/AdminRoutes.yaml"\n/' config/routes.yaml
 
 
 # We copy pushword config to easily edit it later manually
@@ -51,10 +48,11 @@ sed -i -e "s/DATABASE_URL=\".*\"/DATABASE_URL=\"sqlite:\/\/\/%kernel\.project_di
 echo -e "pushword:\n    resource: '@PushwordCoreBundle/Resources/config/routes/all.yaml'" >config/routes.yaml
 
 # Create Database:
-php bin/console doctrine:schema:create
-php bin/console doctrine:fixtures:load
+php bin/console doctrine:schema:create -q
+php bin/console doctrine:fixtures:load -q
 php bin/console pushword:media:cache &
 
+echo "Configure the SUPER ADMIN (you can skip this step pressing enter if you use flat file)"
 # Add an admin user :
 read -p 'Email: ' emailvar
 read -sp 'Password: ' passvar
@@ -78,13 +76,14 @@ composer remove pushword/installer
 composer remove pushword/skeleton
 
 # Install recommended extension
-read -p "Install recommended extensions (page-scanner, static-generator, svg, template-editor) ? [Y/n] " -n 1 -r
+read -p "Install recommended extensions (admin, page-scanner, static-generator, svg, template-editor) ? [Y/n] " -n 1 -r
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-    composer require pushword/page-scanner pushword/static-generator pushword/svg pushword/template-editor
+    composer require pushword/admin pushword/page-scanner pushword/static-generator pushword/svg pushword/template-editor
     sed -i '1s/^/page_scanner:\n    resource: "@PushwordPageScannerBundle\/PageScannerRoutes.yaml"\n/' config/routes.yaml
     sed -i '1s/^/static:\n    resource: "@PushwordStaticGeneratorBundle\/StaticRoutes.yaml"\n/' config/routes.yaml
     sed -i '1s/^/template_editor:\n    resource: "@PushwordTemplateEditorBundle\/TemplateEditorRoutes.yaml"\n/' config/routes.yaml
+    sed -i '1s/^/admin:\n    resource: "@PushwordAdminBundle\/AdminRoutes.yaml"\n/' config/routes.yaml
 fi
 
 # Launch Server and Play
