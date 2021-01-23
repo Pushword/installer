@@ -20,7 +20,7 @@ class PostInstall
         }
     }
 
-    public static function beforeCacheClear(): void // todo rename it
+    public static function partialUnflex(): void
     {
         $files = [
             'templates/base.html.twig',
