@@ -38,10 +38,11 @@ class PostInstall
             }
         }
 
-        if (file_exists('vendor/pushword/core') && !file_exists('var/installer/pushword/core')) {
+        if (file_exists('vendor/pushword/core') && ! file_exists('var/installer/pushword-core')) {
             self::remove('packages.json');
             self::remove('assets');
             self::mirror('vendor/pushword/skeleton/assets', 'assets');
+            self::dumpFile('var/installer/pushword-core', 'done');
         }
     }
 
