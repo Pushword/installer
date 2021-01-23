@@ -16,7 +16,7 @@ class PostInstall
 
         $installer = 'vendor/'.$operation->getPackage()->getName().'/src/installer.php';
         if (file_exists($installer)) {
-            echo 'Executing '.$operation->getPackage()->getName().' installer.'.chr(10);
+            echo 'Executing '.$operation->getPackage()->getName().' installer.'.\chr(10);
             include $installer;
         }
     }
@@ -50,6 +50,7 @@ class PostInstall
         require_once 'vendor/symfony/filesystem/Filesystem.php';
         (new Filesystem())->remove($path);
     }
+
     public static function dumpFile(string $path, string $content)
     {
         require_once 'vendor/symfony/filesystem/Filesystem.php';
