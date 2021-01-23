@@ -16,7 +16,7 @@ class PostInstall
 
         $installer = 'vendor/'.$operation->getPackage()->getName().'/src/post-package-install.php';
         if (file_exists($installer)) {
-            echo 'Executing '.$operation->getPackage()->getName().' installer.'.\chr(10);
+            echo '~ Executing '.$operation->getPackage()->getName().' installer.'.\chr(10);
             include $installer;
         }
     }
@@ -26,7 +26,6 @@ class PostInstall
         $files = [
             'templates/base.html.twig',
             'config/packages/security.yaml',
-            'config/packages/liip_imagine.yaml',
             'config/packages/vich_uploader.yaml',
             'config/packages/sonata_admin.yaml',
             'config/packages/translation.yaml',
