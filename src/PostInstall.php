@@ -4,25 +4,23 @@ namespace Pushword\Installer;
 
 use Composer\DependencyResolver\Operation\InstallOperation;
 use Composer\Installer\PackageEvent;
+use Exception;
+use Symfony\Component\Filesystem\Filesystem;
 
 class PostInstall
 {
-    public static function postPackageInstall(PackageEvent $event)
+    public static function postPackageInstall(PackageEvent $event): void
     {
         /** @var InstallOperation $operation */
         $operation = $event->getOperation();
 
-        if ('pushword/core' != $operation->getPackage()->getName()) {
-            return;
+        $installer = $operation->getPackage()->getTargetDir().'/src/installer.php';
+        if (file_exists($installer)) {
+            include $installer;
         }
-
-        exec('sed -i -e "s/parameters:/parameters:\n    locale: \'fr\'\n    database: \'%env(resolve:DATABASE_URL)%\'/" config/services.yaml');
-
-        exec('sed -i -e "/Pushword\\\\\Core\\\\\PushwordCoreBundle::class => \[\'all\' => true\],/d" config/bundles.php');
-        exec('sed -i -e "s/return \[/return \[\n    Pushword\\\\\Core\\\\\PushwordCoreBundle::class => \[\'all\' => true\],/" config/bundles.php');
     }
 
-    public static function beforeCacheClear() // todo rename it
+    public static function beforeCacheClear(): void // todo rename it
     {
         $files = [
             'templates/base.html.twig',
@@ -38,5 +36,35 @@ class PostInstall
                 unlink($file);
             }
         }
+    }
+
+    public static function mirror(string $source, string $dest)
+    {
+        require_once 'vendor/symfony/filesystem/Filesystem.php';
+        (new Filesystem())->mirror($source, $dest);
+    }
+
+    public static function remove($path)
+    {
+        require_once 'vendor/symfony/filesystem/Filesystem.php';
+        (new Filesystem())->remove($path);
+    }
+
+    public static function replace(string $file, string $search, string $replace): void
+    {
+        $content = file_get_contents($file);
+        if (false === $content) {
+            throw new Exception('`'.$file.'` not found');
+        }
+
+        $content = str_replace($search, $replace, $content);
+        file_put_contents($file, $content);
+    }
+
+    public static function addOnTop(string $file, string $toAdd): void
+    {
+        $content = (string) @file_get_contents($file);
+        $content = $toAdd.$content;
+        file_put_contents($file, $content);
     }
 }
