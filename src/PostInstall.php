@@ -4,6 +4,7 @@ namespace Pushword\Installer;
 
 use Composer\DependencyResolver\Operation\InstallOperation;
 use Composer\Installer\PackageEvent;
+use Composer\Script\Event;
 
 class PostInstall
 {
@@ -22,7 +23,7 @@ class PostInstall
         exec('sed -i -e "s/return \[/return \[\n    Pushword\\\\\Core\\\\\PushwordCoreBundle::class => \[\'all\' => true\],/" config/bundles.php');
     }
 
-    public static function beforeCacheClear()
+    public static function beforeCacheClear() // todo rename it
     {
         $files = [
             'templates/base.html.twig',
