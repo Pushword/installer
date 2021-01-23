@@ -14,14 +14,14 @@ class PostInstall
         /** @var InstallOperation $operation */
         $operation = $event->getOperation();
 
-        $installer = 'vendor/'.$operation->getPackage()->getName().'/src/installer.php';
+        $installer = 'vendor/'.$operation->getPackage()->getName().'/src/post-package-install.php';
         if (file_exists($installer)) {
             echo 'Executing '.$operation->getPackage()->getName().' installer.'.\chr(10);
             include $installer;
         }
     }
 
-    public static function partialUnflex(): void
+    public static function postUpdateCommand(): void
     {
         $files = [
             'templates/base.html.twig',
@@ -34,8 +34,14 @@ class PostInstall
 
         foreach ($files as $file) {
             if (file_exists($file)) {
-                unlink($file);
+                self::remove($file);
             }
+        }
+
+        if (file_exists('vendor/pushword/core') && !file_exists('var/installer/pushword/core')) {
+            self::remove('packages.json');
+            self::remove('assets');
+            self::mirror('vendor/pushword/skeleton/assets', 'assets');
         }
     }
 
