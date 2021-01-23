@@ -14,7 +14,7 @@ class PostInstall
         /** @var InstallOperation $operation */
         $operation = $event->getOperation();
 
-        $installer = $operation->getPackage()->getTargetDir().'/src/installer.php';
+        $installer = 'vendor/'.$operation->getPackage()->getName().'/src/installer.php';
         if (file_exists($installer)) {
             include $installer;
         }
