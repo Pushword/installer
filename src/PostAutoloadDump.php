@@ -64,10 +64,4 @@ class PostAutoloadDump extends PostInstall
 
         return self::$kernel;
     }
-
-    public static function shutdownKernel(): void
-    {
-        self::$kernel->shutdown();
-        self::$kernel = null;
-    }
 }
