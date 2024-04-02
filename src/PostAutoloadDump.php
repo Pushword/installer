@@ -4,6 +4,7 @@ namespace Pushword\Installer;
 
 use App\Kernel;
 use Composer\Script\Event;
+use Exception;
 use Symfony\Component\Dotenv\Dotenv;
 
 class PostAutoloadDump extends PostInstall
@@ -41,7 +42,7 @@ class PostAutoloadDump extends PostInstall
                 $className = '\\Pushword\\'.$package.'\\Installer\\'.basename($script, '.php');
 
                 if (! class_exists($className) || ! method_exists($className, 'run')) {
-                    throw new \Exception();
+                    throw new Exception();
                 }
 
                 /** @psalm-suppress MixedMethodCall */
