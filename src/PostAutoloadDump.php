@@ -4,17 +4,12 @@ namespace Pushword\Installer;
 
 use App\Kernel;
 use Composer\Script\Event;
-use Exception;
 use Symfony\Component\Dotenv\Dotenv;
 
 class PostAutoloadDump extends PostInstall
 {
     private static ?Kernel $kernel = null;
 
-    /**
-     *  @psalm-suppress UnresolvableInclude
-     * @psalm-suppress MixedOperand
-     */
     public static function runPostAutoload(Event $event): void
     {
         $vendorDir = $event->getComposer()->getConfig()->get('vendor-dir');
@@ -40,13 +35,7 @@ class PostAutoloadDump extends PostInstall
 
                 echo '~ Executing '.$package.' update ('.$i++.').'.\chr(10);
                 $className = '\\Pushword\\'.$package.'\\Installer\\'.basename($script, '.php');
-
-                if (! class_exists($className) || ! method_exists($className, 'run')) {
-                    throw new Exception();
-                }
-
-                /** @psalm-suppress MixedMethodCall */
-                (new $className())->run();
+                (new $className())->run(); // @phpstan-ignore-line
 
                 // TODO find a way to use autowiring
                 // self::getKernel()->getContainer()->get($classname)->run();
