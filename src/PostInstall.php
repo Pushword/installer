@@ -2,6 +2,8 @@
 
 namespace Pushword\Installer;
 
+use Exception;
+use LogicException;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -20,6 +22,7 @@ class PostInstall
         foreach ($packages as $package) {
             if (! file_exists('var/installer/'.md5($package)) && file_exists($installer = 'vendor/pushword/'.$package.'/install.php')) {
                 echo '~ Executing '.$package.' post update command install action.'.\chr(10);
+                /** @psalm-suppress UnresolvableInclude */
                 include $installer;
 
                 self::dumpFile('var/installer/'.md5($package), 'done');
@@ -33,7 +36,7 @@ class PostInstall
     public static function scanDir(string $dirPath): array
     {
         if (($dir = scandir($dirPath)) === false) {
-            throw new \LogicException();
+            throw new LogicException();
         }
 
         return array_filter($dir, static fn (string $path): bool => ! \in_array($path, ['.', '..'], true));
@@ -61,13 +64,13 @@ class PostInstall
     {
         $content = file_get_contents($file);
         if (false === $content) {
-            throw new \Exception('`'.$file.'` not found');
+            throw new Exception('`'.$file.'` not found');
         }
 
         $count = 0;
         $content = str_replace($search, $replace, $content, $count);
         if (1 !== $count) {
-            throw new \Exception('Error on replacing `'.$search.'` by `'.$replace.'`');
+            throw new Exception('Error on replacing `'.$search.'` by `'.$replace.'`');
         }
 
         file_put_contents($file, $content);
