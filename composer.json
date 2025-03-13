@@ -5,7 +5,6 @@
   "homepage": "https://pushword.piedweb.com",
   "license": "MIT",
   "require": {
-    "pushword/core": "*",
     "symfony/filesystem": "^7.0"
   },
   "extra": {
